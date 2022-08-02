@@ -3,6 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import './widgets/IconContent.dart';
 import './widgets/ReusableCard.dart';
 import 'constants.dart';
+import 'results_page.dart';
+import './buttons.dart/bottom_button.dart';
+import './buttons.dart/round_icon_button.dart';
+import 'calculator_brain.dart';
 
 enum Gender {
   male,
@@ -15,6 +19,9 @@ class InputPage extends StatefulWidget {
 }
 
 Gender selectedGender;
+int height = 180;
+int weight = 60;
+int age = 40;
 
 class _InputPageState extends State<InputPage> {
   @override
@@ -74,16 +81,27 @@ class _InputPageState extends State<InputPage> {
                         Text('HEIGHT', style: kLabelTextStyle),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          //crossAxisAlignment: CrossAxisAlignment.baseline,
+                          crossAxisAlignment: CrossAxisAlignment.baseline,
+                          textBaseline: TextBaseline.alphabetic,
                           children: <Widget>[
                             Text(
-                              '180',
+                              height.toString(),
                               style: kNumberTextStyle,
                             ),
                             Text('CM', style: kLabelTextStyle),
                           ],
                         ),
-                        //Slider(value: value, onChanged: onChanged)
+                        Slider(
+                          value: height.toDouble(),
+                          max: 250,
+                          min: 100,
+                          activeColor: Color(0xFFEB1555),
+                          onChanged: (double newValue) {
+                            setState(() {
+                              height = newValue.toInt();
+                            });
+                          },
+                        )
                       ],
                     ),
                   ),
@@ -97,21 +115,104 @@ class _InputPageState extends State<InputPage> {
                 Expanded(
                   child: ReusableCard(
                     colour: kActiveCardColour,
+                    cardChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'WEIGHT',
+                          style: kLabelTextStyle,
+                        ),
+                        Text(
+                          weight.toString(),
+                          style: kNumberTextStyle,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RoundIconButton(
+                              icon: FontAwesomeIcons.minus,
+                              onPressed: () {
+                                setState(() {
+                                  weight--;
+                                });
+                              },
+                            ),
+                            SizedBox(width: 10),
+                            RoundIconButton(
+                              icon: FontAwesomeIcons.plus,
+                              onPressed: () {
+                                setState(() {
+                                  weight++;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
                   child: ReusableCard(
                     colour: kActiveCardColour,
+                    cardChild: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'AGE',
+                          style: kLabelTextStyle,
+                        ),
+                        Text(
+                          age.toString(),
+                          style: kNumberTextStyle,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            RoundIconButton(
+                              icon: FontAwesomeIcons.minus,
+                              onPressed: () {
+                                setState(() {
+                                  age--;
+                                });
+                              },
+                            ),
+                            SizedBox(width: 10),
+                            RoundIconButton(
+                              icon: FontAwesomeIcons.plus,
+                              onPressed: () {
+                                setState(() {
+                                  age++;
+                                });
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          Container(
-              color: Color(0xFFEB1555),
-              margin: EdgeInsets.only(top: 10),
-              width: double.infinity,
-              height: KbottomContainerHeight)
+          BottomButton(
+            buttonTitle: 'CALCULATE',
+            onTap: () {
+              CalculatorBrain calc = CalculatorBrain(height, weight);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ResultsPage(
+                      bmiResult: calc.calculateBMI(),
+                      resultText: calc.getResult(),
+                      interpretation: calc.getInterpretation(),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
         ],
       ),
     );
